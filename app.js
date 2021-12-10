@@ -10,9 +10,8 @@ todoList.addEventListener('click', deleteCheck);
 filterOption.addEventListener('change', filterTodo);
 
 //Functions
-function addTodo(event) {
-    // to prevent form from submitting
-    event.preventDefault();
+
+function makeNewTodoElementFromUserInput() {
     // Todo DIV
     const todoDiv = document.createElement('div'); // creating div
     todoDiv.classList.add("todo"); // adding class to div
@@ -20,26 +19,6 @@ function addTodo(event) {
     const newTodo = document.createElement('li');
     newTodo.innerText = todoInput.value;
     newTodo.classList.add('todo-item');
-    // new code here
-    const newTodoJson = {
-        id: Math.floor(Math.random() * 10000) + 10000,
-        todoData: newTodo.innerText,
-        classList: 'todo-item',
-    }
-    const {localStorage} = window;
-    const prevTodos = JSON.parse(localStorage.getItem('todos'));
-    if (!prevTodos) {
-        const todos = [
-            {
-                todo: newTodoJson,
-            }
-        ]
-        localStorage.setItem('todos', JSON.stringify(todos));
-    } else {
-        prevTodos.push({todo: newTodoJson});
-        localStorage.setItem('todos', JSON.stringify(prevTodos));
-    }
-    // new code ends here
     //bringing li inside div
     todoDiv.appendChild(newTodo);
 
@@ -54,10 +33,37 @@ function addTodo(event) {
     trashButton.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
     trashButton.classList.add("trash-btn");
     todoDiv.appendChild(trashButton);
+    return todoDiv;
+}
 
+function addTodo(event) {
+    // to prevent form from submitting
+    event.preventDefault();
+    const todoDiv = makeNewTodoElementFromUserInput();
+    const {localStorage} = window;
+    const prevTodos = JSON.parse(localStorage.getItem('todos'));
+    if (prevTodos) {
+    }
+    // new code here
+    const newTodoJson = {
+        id: Math.floor(Math.random() * 10000) + 10000,
+        todoData: todoDiv.childNodes[0].childNodes[0].data,
+        classList: 'todo-item',
+    }
+    if (!prevTodos) {
+        const todos = [
+            {
+                todo: newTodoJson,
+            }
+        ]
+        localStorage.setItem('todos', JSON.stringify(todos));
+    } else {
+        prevTodos.push({todo: newTodoJson});
+        localStorage.setItem('todos', JSON.stringify(prevTodos));
+    }
+    // new code ends here
     //append to list
     todoList.appendChild(todoDiv);
-
     // clear todo
     todoInput.value = "";
 }
@@ -67,7 +73,7 @@ function deleteCheck(e) {
     const item = e.target;
 
     // Delete todo
-    if (item.classList[0] == "trash-btn") {
+    if (item.classList[0] === "trash-btn") {
         const todo = item.parentElement;
         todo.classList.add("fall");
         todo.addEventListener('transitionend', function () {
