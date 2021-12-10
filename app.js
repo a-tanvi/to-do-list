@@ -36,14 +36,40 @@ function makeNewTodoElementFromUserInput() {
     return todoDiv;
 }
 
+function makeTodoElementFromPrevTodos(prevTodos) {
+    const todoEls = [];
+    prevTodos.forEach((todoItem) => {
+        const todoDiv = document.createElement('div'); // creating div
+        todoDiv.classList.add("todo"); // adding class to div
+        // create LI
+        const newTodo = document.createElement('li');
+        newTodo.innerText = todoItem.todo.todoData;
+        newTodo.classList.add('todo-item');
+        //bringing li inside div
+        todoDiv.appendChild(newTodo);
+
+        //check mark button
+        const completedButton = document.createElement('button');
+        completedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
+        completedButton.classList.add("complte-btn");
+        todoDiv.appendChild(completedButton);
+
+        //trash button
+        const trashButton = document.createElement('button');
+        trashButton.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
+        trashButton.classList.add("trash-btn");
+        todoDiv.appendChild(trashButton);
+        todoEls.push(todoDiv);
+    })
+    return todoEls;
+}
+
 function addTodo(event) {
     // to prevent form from submitting
     event.preventDefault();
     const todoDiv = makeNewTodoElementFromUserInput();
     const {localStorage} = window;
     const prevTodos = JSON.parse(localStorage.getItem('todos'));
-    if (prevTodos) {
-    }
     // new code here
     const newTodoJson = {
         id: Math.floor(Math.random() * 10000) + 10000,
@@ -117,6 +143,12 @@ function filterTodo(e) {
 function fillPreviousTodos() {
     const {localStorage} = window;
     const prevTodos = JSON.parse(localStorage.getItem('todos'));
+    if (prevTodos) {
+        const todoEls = makeTodoElementFromPrevTodos(prevTodos);
+        todoEls.forEach((todoEl) => {
+            todoList.appendChild(todoEl);
+        })
+    }
     console.log(prevTodos);
 }
 
