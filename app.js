@@ -42,6 +42,7 @@ function makeTodoElementFromPrevTodos(prevTodos) {
         const todoDiv = document.createElement('div'); // creating div
         todoDiv.classList.add("todo"); // adding class to div
         // create LI
+        todoDiv.id = todoItem.todo.id;
         const newTodo = document.createElement('li');
         newTodo.innerText = todoItem.todo.todoData;
         newTodo.classList.add('todo-item');
@@ -53,7 +54,9 @@ function makeTodoElementFromPrevTodos(prevTodos) {
         completedButton.innerHTML = '<i class="fa fa-check" aria-hidden="true"></i>';
         completedButton.classList.add("complte-btn");
         todoDiv.appendChild(completedButton);
-
+        if (todoItem.todo.completed) {
+            todoDiv.classList.toggle("completed");
+        }
         //trash button
         const trashButton = document.createElement('button');
         trashButton.innerHTML = '<i class="fa fa-trash" aria-hidden="true"></i>';
@@ -71,10 +74,11 @@ function addTodo(event) {
     const {localStorage} = window;
     const prevTodos = JSON.parse(localStorage.getItem('todos'));
     // new code here
+    const todoId = Math.floor(Math.random() * 10000) + 10000;
     const newTodoJson = {
-        id: Math.floor(Math.random() * 10000) + 10000,
+        id: todoId,
         todoData: todoDiv.childNodes[0].childNodes[0].data,
-        classList: 'todo-item',
+        completed: false,
     }
     if (!prevTodos) {
         const todos = [
@@ -89,6 +93,7 @@ function addTodo(event) {
     }
     // new code ends here
     //append to list
+    todoDiv.id = todoId;
     todoList.appendChild(todoDiv);
     // clear todo
     todoInput.value = "";
@@ -100,11 +105,16 @@ function deleteCheck(e) {
 
     // Delete todo
     if (item.classList[0] === "trash-btn") {
+
         const todo = item.parentElement;
         todo.classList.add("fall");
         todo.addEventListener('transitionend', function () {
             todo.remove();
         })
+        const {localStorage} = window;
+        const prevTodos = JSON.parse(localStorage.getItem('todos'));
+        const updatedTodos = prevTodos.filter((currTodo) => todo.id !== currTodo.todo.id.toString());
+        localStorage.setItem('todos', JSON.stringify(updatedTodos));
     }
 
     // chechmark
