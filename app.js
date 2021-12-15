@@ -113,7 +113,9 @@ function deleteCheck(e) {
         })
         const {localStorage} = window;
         const prevTodos = JSON.parse(localStorage.getItem('todos'));
-        const updatedTodos = prevTodos.filter((currTodo) => todo.id !== currTodo.todo.id.toString());
+        const updatedTodos = prevTodos.filter((currTodo) => {
+            return todo.id !== currTodo.todo.id.toString()
+        });
         localStorage.setItem('todos', JSON.stringify(updatedTodos));
     }
 
@@ -122,6 +124,12 @@ function deleteCheck(e) {
         const todo = item.parentElement;
         todo.classList.toggle("completed");
         filterTodo();
+        const {localStorage} = window;
+        const prevTodos = JSON.parse(localStorage.getItem('todos'));
+        const completedTodo = prevTodos.find((currTodo) => todo.id === currTodo.todo.id.toString());
+        completedTodo.todo.completed = !completedTodo.todo.completed
+        console.log(completedTodo)
+        localStorage.setItem('todos', JSON.stringify(prevTodos));
     }
 }
 
@@ -159,7 +167,6 @@ function fillPreviousTodos() {
             todoList.appendChild(todoEl);
         })
     }
-    console.log(prevTodos);
 }
 
 fillPreviousTodos();
